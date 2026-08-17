@@ -1244,7 +1244,7 @@ if __name__ == "__main__":
 
     if task == "ecoli":
         data = pd.read_csv('demo_data/demo_train.csv')
-        upload_train_plates=list(pd.read_csv(train_plates)['0'])
+        upload_train_plates=list(pd.read_csv(train_plates)['Plate'])
         initial_train_plates = list(set(upload_train_plates))
         holdout_plates = [500]
     
