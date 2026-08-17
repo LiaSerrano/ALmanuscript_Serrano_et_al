@@ -643,21 +643,6 @@ def plate_scoring_total_inhibition(pred_df: pd.DataFrame, k: int) -> pd.DataFram
     return pred_df[pred_df['Plate'].isin(ranked_plates)].copy()
 
 
-def plate_scoring_mean_uncertainty(pred_df: pd.DataFrame, k: int) -> pd.DataFrame:
-    """Select k plates with the highest mean uncertainty (Y_uncertainty)."""
-    if 'Y_uncertainty' not in pred_df.columns:
-        raise ValueError("Uncertainty column 'Y_uncertainty' not found in prediction dataframe.")
-    grouped = pred_df.groupby('Plate', as_index=False)['Y_uncertainty'].mean()
-    ranked_plates = grouped.sort_values('Y_uncertainty', ascending=False).head(k)['Plate'].tolist()
-    return pred_df[pred_df['Plate'].isin(ranked_plates)].copy()
-
-
-def plate_scoring_mean_entropy(pred_df: pd.DataFrame, k: int) -> pd.DataFrame:
-    if 'Y_entropy' not in pred_df.columns:
-        raise ValueError("Entropy column 'Y_entropy' not found in prediction dataframe.")
-    grouped = pred_df.groupby('Plate', as_index=False)['Y_entropy'].mean()
-    ranked_plates = grouped.sort_values('Y_entropy', ascending=False).head(k)['Plate'].tolist()
-    return pred_df[pred_df['Plate'].isin(ranked_plates)].copy()
 
 
 def _smiles_to_morgan_fp(smiles: str, radius: int = 2, n_bits: int = 2048):
@@ -668,155 +653,6 @@ def _smiles_to_morgan_fp(smiles: str, radius: int = 2, n_bits: int = 2048):
         return AllChem.GetMorganFingerprintAsBitVect(mol, radius, nBits=n_bits)
     except Exception:
         return None
-
-
-def plate_scoring_novelty(
-    pred_df: pd.DataFrame,
-    train_df: pd.DataFrame,
-    k: int,
-    radius: int = 2,
-    n_bits: int = 2048,
-) -> pd.DataFrame:
-    """Select k plates with the highest mean novelty where novelty = 1 - mean Tanimoto similarity to training set.
-
-    pred_df: dataframe with at least ['SMILES','Plate'] for pool candidates
-    train_df: dataframe with at least ['SMILES'] of already acquired molecules
-    """
-    # Build training fingerprint list (unique SMILES)
-    train_smiles = pd.Series(train_df['SMILES'].astype(str).unique()).tolist()
-    train_fps = [
-        _smiles_to_morgan_fp(s, radius=radius, n_bits=n_bits)
-        for s in train_smiles
-    ]
-    train_fps = [fp for fp in train_fps if fp is not None]
-
-    # If no valid training fingerprints, consider all candidates fully novel
-    if len(train_fps) == 0:
-        novelty_per_smiles = {s: 1.0 for s in pred_df['SMILES'].astype(str).unique()}
-    else:
-        novelty_per_smiles = {}
-        for s in pred_df['SMILES'].astype(str).unique():
-            fp = _smiles_to_morgan_fp(s, radius=radius, n_bits=n_bits)
-            if fp is None:
-                novelty_per_smiles[s] = np.nan
-                continue
-            sims = DataStructs.BulkTanimotoSimilarity(fp, train_fps)
-            if len(sims) == 0:
-                novelty_per_smiles[s] = 1.0
-            else:
-                mean_sim = float(np.nanmean(sims))
-                novelty_per_smiles[s] = 1.0 - mean_sim
-
-    df_with_novelty = pred_df.copy()
-    df_with_novelty['novelty'] = df_with_novelty['SMILES'].astype(str).map(novelty_per_smiles)
-
-    grouped = df_with_novelty.groupby('Plate', as_index=False)['novelty'].mean()
-    ranked_plates = grouped.sort_values('novelty', ascending=False).head(k)['Plate'].tolist()
-    return df_with_novelty[df_with_novelty['Plate'].isin(ranked_plates)].copy()
-
-def plate_scoring_udis_udata(pred_df: pd.DataFrame, 
-                             k:int, 
-                             uncertainty_data: dict) -> pd.DataFrame:
-    udis_udata_plate=[]
-
-    for plate in uncertainty_data:
-        udis_udata_plate.append((plate, np.mean(uncertainty_data[plate]['udis']), 
-                          
-                          np.mean(uncertainty_data[plate]['udata'])))
-        
-    sort_by_udis=sorted(udis_udata_plate, key=lambda x:x[1], reverse=True)[:int(np.round(len(udis_udata_plate)/2))]
-    sort_by_udata=sorted(sort_by_udis, key=lambda x:x[2], reverse=True)
-    sorted_plates=[plate for plate, udis, udata in sort_by_udata][:k]
-    return pred_df[pred_df['Plate'].isin(sorted_plates)].copy()
-    
-
-def plate_scoring_udis_udata_inhibition(
-    pred_df: pd.DataFrame,
-    k: int,
-    uncertainty_data: dict,
-    w_udis: float = 1/3,
-    w_udata: float = 1/3,
-    w_inh: float = 1/3,
-) -> pd.DataFrame:
-
-    # Collect mean udis and udata per plate
-    plate_stats = []
-    for plate in uncertainty_data:
-        plate_stats.append((
-            plate,
-            np.mean(uncertainty_data[plate]['udis']),
-            np.mean(uncertainty_data[plate]['udata']),
-        ))
-    stats_df = pd.DataFrame(plate_stats, columns=["Plate", "udis_mean", "udata_mean"])
-
-    # Mean inhibition per plate
-    inh_df = pred_df.groupby("Plate", as_index=False)["Y_pred"].mean()
-    inh_df = inh_df.rename(columns={"Y_pred": "inhibition_mean"})
-
-    # Merge
-    merged = stats_df.merge(inh_df, on="Plate", how="left")
-
-    # Normalize each metric
-    merged["udis_n"] = _normalize_series(merged["udis_mean"])
-    merged["udata_n"] = _normalize_series(merged["udata_mean"])
-    merged["inh_n"] = _normalize_series(merged["inhibition_mean"])
-
-    # Weighted score
-    merged["score"] = (
-        w_udis * merged["udis_n"] +
-        w_udata * merged["udata_n"] +
-        w_inh * merged["inh_n"]
-    )
-
-    # Pick top k plates
-    top_plates = merged.sort_values("score", ascending=False).head(k)["Plate"].tolist()
-
-    return pred_df[pred_df["Plate"].isin(top_plates)].copy()
-
-def plate_scoring_udata_inhibition(
-    pred_df: pd.DataFrame,
-    k: int,
-    uncertainty_data: dict) -> pd.DataFrame:
-    """
-    Step 1: Select top 50% of plates by mean udata.
-    Step 2: From those, pick top-k plates by mean inhibition (Y_pred).
-    """
-
-    udata_plate = []
-    for plate in uncertainty_data:
-        udata_plate.append((plate, np.mean(uncertainty_data[plate]['udata'])))
-
-    top_by_udata = sorted(
-        udata_plate, key=lambda x: x[1], reverse=True
-    )[:int(np.round(len(udata_plate) / 2))]
-
-    candidate_plates = [plate for plate, _ in top_by_udata]
-
-    grouped = pred_df.groupby("Plate", as_index=False)["Y_pred"].mean()
-    grouped = grouped[grouped["Plate"].isin(candidate_plates)]
-    ranked = grouped.sort_values("Y_pred", ascending=False).head(k)["Plate"].tolist()
-
-
-    return pred_df[pred_df["Plate"].isin(ranked)].copy()
-
-
-def plate_scoring_udata(pred_df: pd.DataFrame, 
-                             k:int, 
-                             uncertainty_data: dict) -> pd.DataFrame:
-    
-    udata_plate=[]
-
-    for plate in uncertainty_data:
-        udata_plate.append((plate, np.mean(uncertainty_data[plate]['udata'])))
-                
-        
-    sort_by_udata=sorted(udata_plate, key=lambda x:x[1], reverse=True)[:int(np.round(len(udata_plate)/2))]
-
-    sorted_plates=[plate for plate, udata in sort_by_udata][:k]
-    
-    return pred_df[pred_df['Plate'].isin(sorted_plates)].copy()  
-
-
 
 
 def evaluate_on_holdout(pred_df: pd.DataFrame, full_labels_df: pd.DataFrame, num_replicates: int = 1) -> List[Dict[str, float]]:
@@ -967,81 +803,6 @@ def annotate_novelty_column(
     df_with_novelty = pred_df.copy()
     df_with_novelty['novelty'] = df_with_novelty['SMILES'].astype(str).map(novelty_per_smiles)
     return df_with_novelty
-
-
-def plate_scoring_combo_pred_novelty(
-    pred_df: pd.DataFrame,
-    train_df: pd.DataFrame,
-    k: int,
-    radius: int = 2,
-    n_bits: int = 2048,
-) -> pd.DataFrame:
-    df = annotate_novelty_column(pred_df, train_df, radius=radius, n_bits=n_bits)
-    agg = df.groupby('Plate', as_index=False).agg(
-        mean_pred=('Y_pred', 'mean'),
-        mean_nov=('novelty', 'mean'),
-    )
-    agg['pred_n'] = _normalize_series(agg['mean_pred'])
-    agg['nov_n'] = _normalize_series(agg['mean_nov'])
-    agg['score'] = 0.5 * (agg['pred_n'] + agg['nov_n'])
-    ranked = agg.sort_values('score', ascending=False).head(k)['Plate'].tolist()
-    return df[df['Plate'].isin(ranked)].copy()
-
-
-def plate_scoring_combo_pred_uncertainty(pred_df: pd.DataFrame, k: int) -> pd.DataFrame:
-    if 'Y_uncertainty' not in pred_df.columns:
-        raise ValueError("Column 'Y_uncertainty' not found.")
-    agg = pred_df.groupby('Plate', as_index=False).agg(
-        mean_pred=('Y_pred', 'mean'),
-        mean_unc=('Y_uncertainty', 'mean'),
-    )
-    agg['pred_n'] = _normalize_series(agg['mean_pred'])
-    agg['unc_n'] = _normalize_series(agg['mean_unc'])
-    agg['score'] = 0.5 * (agg['pred_n'] + (1.0 - agg['unc_n']))
-    ranked = agg.sort_values('score', ascending=False).head(k)['Plate'].tolist()
-    return pred_df[pred_df['Plate'].isin(ranked)].copy()
-
-
-def plate_scoring_combo_pred_novelty_uncertainty(
-    pred_df: pd.DataFrame,
-    train_df: pd.DataFrame,
-    k: int,
-    radius: int = 2,
-    n_bits: int = 2048,
-) -> pd.DataFrame:
-    if 'Y_uncertainty' not in pred_df.columns:
-        raise ValueError("Column 'Y_uncertainty' not found.")
-    df = annotate_novelty_column(pred_df, train_df, radius=radius, n_bits=n_bits)
-    agg = df.groupby('Plate', as_index=False).agg(
-        mean_pred=('Y_pred', 'mean'),
-        mean_nov=('novelty', 'mean'),
-        mean_unc=('Y_uncertainty', 'mean'),
-    )
-    agg['pred_n'] = _normalize_series(agg['mean_pred'])
-    agg['nov_n'] = _normalize_series(agg['mean_nov'])
-    agg['unc_n'] = _normalize_series(agg['mean_unc'])
-    agg['score'] = (agg['pred_n'] + agg['nov_n'] + (1.0 - agg['unc_n'])) / 3.0
-    ranked = agg.sort_values('score', ascending=False).head(k)['Plate'].tolist()
-    return df[df['Plate'].isin(ranked)].copy()
-
-
-def plate_scoring_combo_novelty_times_pred(
-    pred_df: pd.DataFrame,
-    train_df: pd.DataFrame,
-    k: int,
-    radius: int = 2,
-    n_bits: int = 2048,
-) -> pd.DataFrame:
-    df = annotate_novelty_column(pred_df, train_df, radius=radius, n_bits=n_bits)
-    agg = df.groupby('Plate', as_index=False).agg(
-        mean_pred=('Y_pred', 'mean'),
-        mean_nov=('novelty', 'mean'),
-    )
-    agg['pred_n'] = _normalize_series(agg['mean_pred'])
-    agg['nov_n'] = _normalize_series(agg['mean_nov'])
-    agg['score'] = agg['pred_n'] * agg['nov_n']
-    ranked = agg.sort_values('score', ascending=False).head(k)['Plate'].tolist()
-    return df[df['Plate'].isin(ranked)].copy()
 
 
 def plate_scoring_batch_selection_UdisUdata(
@@ -1314,223 +1075,7 @@ def plate_scoring_batch_selection(
     ranked_plates = rank_df.head(k)['Plate'].tolist()
     return pred_df[pred_df['Plate'].isin(ranked_plates)].copy()
 
-def plate_scoring_batch_selection_thwart_nov(
-    pred_df: pd.DataFrame,
-    train_df: pd.DataFrame,
-    k: int,
-    prediction_threshold: float = 0.7,
-    novelty_threshold: float = 0.5,
-    radius: int = 2,
-    n_bits: int = 2048,
-) -> pd.DataFrame:
-    """Selects k plates based on a ranking scheme inspired by batch_selection.py."""
-    prediction_col = 'Y_pred'
-    target_col = 'Y'
 
-    pred_df_copy = pred_df.copy()
-    pred_df_copy['potential_inhibitory'] = np.where(pred_df_copy[prediction_col] >= prediction_threshold, 1, 0)
-
-    hit_df = pred_df_copy[pred_df_copy['potential_inhibitory'] == 1].copy()
-    nonhit_df = pred_df_copy[pred_df_copy['potential_inhibitory'] == 0].copy()
-
-    # Hit Novelty vs. positive training examples
-    train_pos_df = train_df[train_df[target_col] >= prediction_threshold]
-    ref_fps_pos = [_smiles_to_morgan_fp(s, radius=radius, n_bits=n_bits) for s in train_pos_df['SMILES'].unique()]
-    ref_fps_pos = [fp for fp in ref_fps_pos if fp is not None]
-
-    if not hit_df.empty:
-        hit_smiles = hit_df['SMILES']
-        hit_fps = [_smiles_to_morgan_fp(s, radius=radius, n_bits=n_bits) for s in hit_smiles]
-        
-        max_sim_list = []
-        for hit_fp in hit_fps:
-            if hit_fp is None or not ref_fps_pos:
-                max_sim_list.append(0)
-                continue
-            sims = DataStructs.BulkTanimotoSimilarity(hit_fp, ref_fps_pos)
-            max_sim_list.append(max(sims) if sims else 0)
-        hit_df['hit_novelty'] = 1 - np.array(max_sim_list)
-
-    # Non-Hit Novelty vs. negative training examples
-    train_neg_df = train_df[train_df[target_col] < prediction_threshold]
-    ref_fps_neg = [_smiles_to_morgan_fp(s, radius=radius, n_bits=n_bits) for s in train_neg_df['SMILES'].unique()]
-    ref_fps_neg = [fp for fp in ref_fps_neg if fp is not None]
-    
-    if not nonhit_df.empty:
-        nonhit_smiles = nonhit_df['SMILES']
-        nonhit_fps = [_smiles_to_morgan_fp(s, radius=radius, n_bits=n_bits) for s in nonhit_smiles]
-
-        max_sim_list_neg = []
-        for nonhit_fp in nonhit_fps:
-            if nonhit_fp is None or not ref_fps_neg:
-                max_sim_list_neg.append(0)
-                continue
-            sims = DataStructs.BulkTanimotoSimilarity(nonhit_fp, ref_fps_neg)
-            max_sim_list_neg.append(max(sims) if sims else 0)
-        nonhit_df['nonhit_novelty'] = 1 - np.array(max_sim_list_neg)
-
-    # Merge novelty scores back
-    if 'hit_novelty' in hit_df.columns:
-        pred_df_copy = pred_df_copy.merge(hit_df[['SMILES', 'Plate', 'hit_novelty']], on=['SMILES', 'Plate'], how='left')
-    else:
-        pred_df_copy['hit_novelty'] = 0.0
-
-    if 'nonhit_novelty' in nonhit_df.columns:
-        pred_df_copy = pred_df_copy.merge(nonhit_df[['SMILES', 'Plate', 'nonhit_novelty']], on=['SMILES', 'Plate'], how='left')
-    else:
-        pred_df_copy['nonhit_novelty'] = 0.0
-
-    pred_df_copy['hit_novelty'] = pred_df_copy['hit_novelty'].fillna(0)
-    pred_df_copy['nonhit_novelty'] = pred_df_copy['nonhit_novelty'].fillna(0)
-
-    # Rank Plates
-    pred_df_copy['novel_hits'] = np.where(pred_df_copy['hit_novelty'] >= novelty_threshold, 1, 0)
-    
-    rank_df = pred_df_copy.groupby('Plate', as_index=False).agg(
-        potential_inhibitory=('potential_inhibitory', 'sum'),
-        novel_hits=('novel_hits', 'sum'),
-        nonhit_novelty=('nonhit_novelty', 'mean')
-    )
-
-    # In-plate diversity (clustering)
-    plate_cluster_num = []
-    for plate in rank_df['Plate']:
-        plate_df = pred_df_copy[(pred_df_copy['Plate'] == plate) & (pred_df_copy['potential_inhibitory'] == 1)]
-        if len(plate_df) < 2:
-            plate_cluster_num.append(len(plate_df))
-            continue
-        
-        plate_smiles = list(plate_df['SMILES'])
-        plate_fps = [_smiles_to_morgan_fp(s, radius=2, n_bits=1024) for s in plate_smiles]
-        plate_fps = [fp for fp in plate_fps if fp is not None]
-
-        if len(plate_fps) < 2:
-            plate_cluster_num.append(len(plate_fps))
-            continue
-        
-        dists = []
-        nfps = len(plate_fps)
-        for i in range(1, nfps):
-            sims = DataStructs.BulkTanimotoSimilarity(plate_fps[i], plate_fps[:i])
-            dists.extend([1-x for x in sims])
-        
-        cs = Butina.ClusterData(dists, nfps, 0.5, isDistData=True)
-        plate_cluster_num.append(len(cs))
-        
-    rank_df['num_clusters'] = plate_cluster_num
-
-
-    # Overall rank calculation
-    selection_weights = {
-        'nonhit_novelty': .9,
-        'potential_inhibitory': 1,
-        'novel_hits': 1,
-        'num_clusters': 1
-
-    }
-    
-    
-    rank_df['overall_rank'] = 0
-    for column, weight in selection_weights.items():
-        rank_df[f'rank_{column}'] = rank_df[column].rank(ascending=False)
-        rank_df['overall_rank'] += weight * rank_df[f'rank_{column}']
-    
-    rank_df['overall_rank'] = rank_df['overall_rank'].rank(ascending=True)
-    rank_df = rank_df.sort_values(by='overall_rank', ascending=True)
-
-    ranked_plates = rank_df.head(k)['Plate'].tolist()
-    return pred_df[pred_df['Plate'].isin(ranked_plates)].copy()
-
-    
-def plate_scoring_batch_selection_ablate_hitnovelty(
-    pred_df: pd.DataFrame,
-    train_df: pd.DataFrame,
-    k: int,
-    prediction_threshold: float = 0.7,
-    novelty_threshold: float = 0.5,
-    radius: int = 2,
-    n_bits: int = 2048,
-) -> pd.DataFrame:
-    """Selects k plates based on a ranking scheme inspired by batch_selection.py."""
-    prediction_col = 'Y_pred'
-    target_col = 'Y'
-
-    pred_df_copy = pred_df.copy()
-    pred_df_copy['potential_inhibitory'] = np.where(pred_df_copy[prediction_col] >= prediction_threshold, 1, 0)
-
-    all_df = pred_df_copy[pred_df_copy['potential_inhibitory'] <2].copy()
-
-    # allmols Novelty vs. negative training examples
-    ref_fps = [_smiles_to_morgan_fp(s, radius=radius, n_bits=n_bits) for s in train_df['SMILES'].unique()]
-    ref_fps = [fp for fp in ref_fps if fp is not None]
-    
-    if not pred_df_copy.empty:
-        all_smiles = pred_df_copy['SMILES']
-        all_fps = [_smiles_to_morgan_fp(s, radius=radius, n_bits=n_bits) for s in all_smiles]
-
-        max_sim_list = []
-        for all_fp in all_fps:
-            if all_fp is None or not ref_fps:
-                max_sim_list.append(0)
-                continue
-            sims = DataStructs.BulkTanimotoSimilarity(all_fp, ref_fps)
-            max_sim_list.append(max(sims) if sims else 0)
-
-        pred_df_copy['all_novelty'] = 1 - np.array(max_sim_list)
-    else:
-        pred_df_copy['all_novelty'] = 0.0
-
-
-    # Rank plates using sum of novelty scores
-    rank_df = pred_df_copy.groupby('Plate', as_index=False).agg(
-        potential_inhibitory=('potential_inhibitory', 'sum'),
-        novelty_sum=('all_novelty', 'sum')
-    )
-
-    # In-plate diversity (clustering)
-    plate_cluster_num = []
-    for plate in rank_df['Plate']:
-        plate_df = pred_df_copy[(pred_df_copy['Plate'] == plate) & (pred_df_copy['potential_inhibitory'] == 1)]
-        if len(plate_df) < 2:
-            plate_cluster_num.append(len(plate_df))
-            continue
-        
-        plate_smiles = list(plate_df['SMILES'])
-        plate_fps = [_smiles_to_morgan_fp(s, radius=2, n_bits=1024) for s in plate_smiles]
-        plate_fps = [fp for fp in plate_fps if fp is not None]
-
-        if len(plate_fps) < 2:
-            plate_cluster_num.append(len(plate_fps))
-            continue
-        
-        dists = []
-        nfps = len(plate_fps)
-        for i in range(1, nfps):
-            sims = DataStructs.BulkTanimotoSimilarity(plate_fps[i], plate_fps[:i])
-            dists.extend([1-x for x in sims])
-        
-        cs = Butina.ClusterData(dists, nfps, 0.5, isDistData=True)
-        plate_cluster_num.append(len(cs))
-        
-    rank_df['num_clusters'] = plate_cluster_num
-
-    # Overall rank calculation
-    selection_weights = {
-        'novelty_sum': 1,
-        'potential_inhibitory': 1,
-        'num_clusters': 1
-    }
-    
-    rank_df['overall_rank'] = 0
-    for column, weight in selection_weights.items():
-        rank_df[f'rank_{column}'] = rank_df[column].rank(ascending=False)
-        rank_df['overall_rank'] += weight * rank_df[f'rank_{column}']
-    
-    rank_df['overall_rank'] = rank_df['overall_rank'].rank(ascending=True)
-    rank_df = rank_df.sort_values(by='overall_rank', ascending=True)
-
-    ranked_plates = rank_df.head(k)['Plate'].tolist()
-    return pred_df[pred_df['Plate'].isin(ranked_plates)].copy()
 
 
 
@@ -1584,48 +1129,7 @@ def run_active_learning_simulation(
         # Choose acquisition strategy
         if acquisition_strategy == 'mean_uncertainty':
             selected_pool = plate_scoring_mean_uncertainty(pred_merged_pool, acquisition_batch_size)
-        elif acquisition_strategy == 'novelty':
-            selected_pool = plate_scoring_novelty(
-                pred_merged_pool,
-                train_df=train_df,
-                k=acquisition_batch_size,
-                radius=novelty_radius,
-                n_bits=novelty_n_bits
-            )
-        elif acquisition_strategy == 'entropy':
-            selected_pool = plate_scoring_mean_entropy(pred_merged_pool, acquisition_batch_size)
-
-
-        elif acquisition_strategy == 'combo_pred_novelty':
-            selected_pool = plate_scoring_combo_pred_novelty(
-                pred_merged_pool,
-                train_df=train_df,
-                k=acquisition_batch_size,
-                radius=novelty_radius,
-                n_bits=novelty_n_bits
-            )
-        elif acquisition_strategy == 'combo_pred_uncertainty':
-            selected_pool = plate_scoring_combo_pred_uncertainty(
-                pred_merged_pool,
-                k=acquisition_batch_size,
-            )
-        elif acquisition_strategy == 'combo_pred_novelty_uncertainty':
-            selected_pool = plate_scoring_combo_pred_novelty_uncertainty(
-                pred_merged_pool,
-                train_df=train_df,
-                k=acquisition_batch_size,
-                radius=novelty_radius,
-                n_bits=novelty_n_bits
-            )
-        elif acquisition_strategy == 'combo_novelty_times_pred':
-            selected_pool = plate_scoring_combo_novelty_times_pred(
-                pred_merged_pool,
-                train_df=train_df,
-                k=acquisition_batch_size,
-                radius=novelty_radius,
-                n_bits=novelty_n_bits
-            )
-
+            
         elif acquisition_strategy == 'batch_selection_UdisUdata':
             UncertaintyDictionary=Decompose_Uncertainty(pred_merged_pool, _collect_model_paths(model_dir, max_models=num_replicates))
             selected_pool = plate_scoring_batch_selection_UdisUdata(
@@ -1637,96 +1141,6 @@ def run_active_learning_simulation(
                 uncertainty_data=UncertaintyDictionary
             )
 
-        elif acquisition_strategy == 'novelty_pivot_uncertainty':
-            if it < max_iterations/2:
-                selected_pool = plate_scoring_combo_pred_novelty(
-                pred_merged_pool,
-                train_df=train_df,
-                k=acquisition_batch_size,
-                radius=novelty_radius,
-                n_bits=novelty_n_bits
-                )
-
-
-            else:
-                selected_pool = plate_scoring_combo_pred_uncertainty(
-                pred_merged_pool,
-                train_df=train_df,
-                k=acquisition_batch_size
-            )
-
-        elif acquisition_strategy == 'novelty_pivot_inhibition':
-            if it < max_iterations/2:
-                selected_pool = plate_scoring_combo_pred_novelty(
-                    pred_merged_pool,
-                    train_df=train_df,
-                    k=acquisition_batch_size,
-                    radius=novelty_radius,
-                    n_bits=novelty_n_bits
-                )
-            else:
-                selected_pool = plate_scoring_total_inhibition(
-                    pred_merged_pool,
-                    k=acquisition_batch_size,
-                )
-        elif acquisition_strategy == 'OGbatch pivot uncertainty':
-            if it < max_iterations / 2:
-                selected_pool = plate_scoring_batch_selection(
-                    pred_merged_pool,
-                    train_df=train_df,
-                    k=acquisition_batch_size,
-                    radius=novelty_radius,
-                    n_bits=novelty_n_bits
-                )
-            else:
-                selected_pool = plate_scoring_combo_pred_uncertainty(
-                    pred_merged_pool,
-                    k=acquisition_batch_size
-                )
-            
-        elif acquisition_strategy == 'OGbatch pivot UdisUdata_inhibit':
-             if it < max_iterations/2:
-                selected_pool = plate_scoring_batch_selection(
-                pred_merged_pool,
-                train_df=train_df,
-                k=acquisition_batch_size,
-                radius=novelty_radius,
-                n_bits=novelty_n_bits
-            )
-             else:
-                UncertaintyDictionary=Decompose_Uncertainty(pool_df, _collect_model_paths(model_dir, max_models=num_replicates))
-                selected_pool = plate_scoring_udis_udata_inhibition(
-                pred_merged_pool,
-                k=acquisition_batch_size,
-                uncertainty_data=UncertaintyDictionary
-
-            )
-        elif acquisition_strategy == 'OGbatch pivot UdisUdata':
-             if it < max_iterations/2:
-                selected_pool = plate_scoring_batch_selection(
-                pred_merged_pool,
-                train_df=train_df,
-                k=acquisition_batch_size,
-                radius=novelty_radius,
-                n_bits=novelty_n_bits
-            )
-             else:
-                UncertaintyDictionary=Decompose_Uncertainty(pool_df, _collect_model_paths(model_dir, max_models=num_replicates))
-                selected_pool = plate_scoring_udis_udata(
-                pred_merged_pool,
-                k=acquisition_batch_size,
-                uncertainty_data=UncertaintyDictionary
-
-            )
-
-        elif acquisition_strategy == 'OG - hitnovelty':
-            selected_pool = plate_scoring_batch_selection_ablate_hitnovelty(
-            pred_merged_pool,
-            train_df=train_df,
-            k=acquisition_batch_size,
-            radius=novelty_radius,
-            n_bits=novelty_n_bits
-        )
         elif acquisition_strategy == 'batch_selection':
             selected_pool = plate_scoring_batch_selection(
             pred_merged_pool,
@@ -1738,66 +1152,6 @@ def run_active_learning_simulation(
             
         elif acquisition_strategy == 'random':
             selected_pool = plate_scoring_random(pred_merged_pool, acquisition_batch_size)
-
-        elif acquisition_strategy == 'UdisUdata':
-           # if it <2:
-            #    selected_pool = plate_scoring_random(pred_merged_pool, acquisition_batch_size)
-
-            UncertaintyDictionary=Decompose_Uncertainty(pred_merged_pool, _collect_model_paths(model_dir, max_models=num_replicates))
-            selected_pool = plate_scoring_udis_udata(
-            pred_merged_pool,
-            k=acquisition_batch_size,
-            uncertainty_data=UncertaintyDictionary
-                
-                )
-
-        elif acquisition_strategy == 'udata':
-            UncertaintyDictionary=Decompose_Uncertainty(pred_merged_pool, _collect_model_paths(model_dir, max_models=num_replicates))
-            selected_pool = plate_scoring_udata(
-            pred_merged_pool,
-            k=acquisition_batch_size,
-            uncertainty_data=UncertaintyDictionary
-
-        )
-
-        elif acquisition_strategy == 'udisudata + inhib':
-
-            UncertaintyDictionary=Decompose_Uncertainty(pred_merged_pool, _collect_model_paths(model_dir, max_models=num_replicates))
-            selected_pool = plate_scoring_udis_udata_inhibition(
-            pred_merged_pool,
-            k=acquisition_batch_size,
-            uncertainty_data=UncertaintyDictionary
-
-        )
-
-        elif acquisition_strategy == 'udata + inhib':
-
-            UncertaintyDictionary=Decompose_Uncertainty(pred_merged_pool, _collect_model_paths(model_dir, max_models=num_replicates))
-            selected_pool = plate_scoring_udata_inhibition(
-            pred_merged_pool,
-            k=acquisition_batch_size,
-            uncertainty_data=UncertaintyDictionary
-
-        )
-
-        elif acquisition_strategy =='thwartnov':
-            if it < 23:
-                selected_pool = plate_scoring_batch_selection(
-                pred_merged_pool,
-                train_df=train_df,
-                k=acquisition_batch_size,
-                radius=novelty_radius,
-                n_bits=novelty_n_bits,
-            )
-            else:
-
-                selected_pool=plate_scoring_batch_selection_thwart_nov(
-                pred_merged_pool,
-                train_df=train_df,
-                k=acquisition_batch_size,
-                radius=novelty_radius,
-                n_bits=novelty_n_bits,
-            )
 
 
         else:
@@ -1863,27 +1217,9 @@ if __name__ == "__main__":
         type=str,
         choices=[
             "mean_pred",
-            "mean_uncertainty",
-            "novelty",
-            "entropy",
-            "combo_pred_novelty",
-            "combo_pred_uncertainty",
-            "combo_pred_novelty_uncertainty",
-            "combo_novelty_times_pred",
             "batch_selection",
             "random",
-            "OG - hitnovelty",
-            "novelty_pivot_inhibition",
-            "novelty_pivot_uncertainty",
-            "OGbatch pivot uncertainty",
-            "OGbatch pivot UdisUdata_inhibit",
-            "OGbatch pivot UdisUdata",
-            "UdisUdata",
-            "udata",
-            "udata + inhib",
-            "udisudata + inhib",
             'batch_selection_UdisUdata',
-            "thwartnov"
         ],
         default="mean_pred",
         help="Acquisition strategy",
@@ -1905,17 +1241,9 @@ if __name__ == "__main__":
     train_plates = args.initial_train_plates
     #base_out_dir=args.out_dir
 
-    if task == "lyme":
-        data = pd.read_csv('/n/data1/hms/dbmi/farhat/anz226/narrow_lyme_antibiotic/AL_Simulation/data/bb.csv')
-        data.rename(columns={'Bb_Inhibition_%ctl': 'Y'}, inplace=True)
-        unique_plates = sorted(data['Plate'].unique().tolist())
-        initial_train_plates = [unique_plates[0], unique_plates[1]]
 
-        holdout_plates = [3992, 3993, 3994, 3995, 3996, 1595, 1583, 1579, 1578, 1492, 1493, 1473, 1485]
-
-    elif task == "tb":
-        data = pd.read_csv('/n/data1/hms/dbmi/farhat/LRS/Lyme_Antibiotics/simulation/kmeans_split_320pb/Mtb_train_90p_kmeans_320pb.csv')
-        data.rename(columns={'inhibition': 'Y'}, inplace=True)
+    if task == "ecoli":
+        data = pd.read_csv('demo_data/demo_train.csv')
         upload_train_plates=list(pd.read_csv(train_plates)['0'])
         initial_train_plates = list(set(upload_train_plates))
         holdout_plates = [500]
@@ -1924,7 +1252,7 @@ if __name__ == "__main__":
     else:
         raise ValueError(f"Task {task} not supported")
 
-    base_out_dir = f'/n/data1/hms/dbmi/farhat/LRS/Lyme_Antibiotics/simulation/kmeans_split_320pb'
+    base_out_dir = f'demo_data/output'
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
     out_dir = os.path.join(base_out_dir, acquisition_strategy, timestamp)
     os.makedirs(out_dir, exist_ok=True)
