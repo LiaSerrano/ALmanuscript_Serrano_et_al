@@ -8,6 +8,6 @@
 #SBATCH -e run_logs/hostname_%j.err
 
 
- python "/n/data1/hms/dbmi/farhat/LRS/Lyme_Antibiotics/simulation/updated_activeLearn.py"  --acquisition_strategy "batch_selection" \
-                                                                                           --task tb \
-                                                                                           --initial_train_plates /n/data1/hms/dbmi/farhat/LRS/Lyme_Antibiotics/simulation/10212025_replicates/starting_plate.csv
+ python "/n/data1/hms/dbmi/farhat/LRS/Lyme_Antibiotics/simulation/updated_activeLearn.py"  --acquisition_strategy "batch_selection" \ 
+                                                                                           --task ecoli \
+                                                                                           --initial_train_plates /demo_data/starting_plate.csv
