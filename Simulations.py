@@ -1230,9 +1230,21 @@ if __name__ == "__main__":
         default=None
         )
     
-    parser.add_argument(
-        "--out_dir"
+   parser.add_argument(
+        "--out_dir",
+        type=str,
+        required=True,
+        help="Base directory for simulation outputs"
     )
+
+    parser.add_argument(
+        "--data_path",
+        type=str,
+        required=True,
+        help="Path to demo training CSV"
+    )
+
+
 
 
     args = parser.parse_args()
@@ -1243,7 +1255,7 @@ if __name__ == "__main__":
 
 
     if task == "ecoli":
-        data = pd.read_csv('demo_data/demo_train.csv')
+        data = pd.read_csv(args.data_path)
         upload_train_plates=list(pd.read_csv(train_plates)['Plate'])
         initial_train_plates = list(set(upload_train_plates))
         holdout_plates = [500]
@@ -1252,7 +1264,7 @@ if __name__ == "__main__":
     else:
         raise ValueError(f"Task {task} not supported")
 
-    base_out_dir = f'demo_data/output'
+    base_out_dir = args.out_dir
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
     out_dir = os.path.join(base_out_dir, acquisition_strategy, timestamp)
     os.makedirs(out_dir, exist_ok=True)
