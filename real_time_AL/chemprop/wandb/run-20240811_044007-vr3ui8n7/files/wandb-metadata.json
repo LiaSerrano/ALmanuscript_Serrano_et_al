@@ -1,0 +1,180 @@
+{
+    "os": "Linux-3.10.0-1160.119.1.el7.x86_64-x86_64-with-glibc2.10",
+    "python": "3.8.19",
+    "heartbeatAt": "2024-08-11T08:40:08.073310",
+    "startedAt": "2024-08-11T08:40:07.179963",
+    "docker": null,
+    "cuda": null,
+    "args": [
+        "--data_path",
+        "/n/data1/hms/dbmi/farhat/alex/Lyme_Antibiotics/batch_selection/tb_simulation/uncertainty_greedy_single_molecule/output/Batch_15/cumulative_screening_results.csv",
+        "--smiles_columns",
+        "SMILES",
+        "--target_columns",
+        "inhibition",
+        "--dataset_type",
+        "classification",
+        "--save_dir",
+        "/n/data1/hms/dbmi/farhat/alex/Lyme_Antibiotics/batch_selection/tb_simulation/uncertainty_greedy_single_molecule/output/Batch_16/evidential_classification_checkpoint",
+        "--split_type",
+        "random",
+        "--num_folds",
+        "1",
+        "--metric",
+        "auc",
+        "--extra_metrics",
+        "binary_cross_entropy",
+        "prc-auc",
+        "--loss_function",
+        "dirichlet",
+        "--evidential_regularization",
+        "0.2",
+        "--wandb_group_name",
+        "TB_AL_Batch16_Evidential_Classification",
+        "--class_balance",
+        "--epochs",
+        "200",
+        "--features_generator",
+        "rdkit_2d_normalized",
+        "--no_features_scaling"
+    ],
+    "state": "running",
+    "program": "train.py",
+    "codePathLocal": "train.py",
+    "codePath": "run_training/train.py",
+    "git": {
+        "remote": "https://github.com/AlexWei21/Lyme_Antibiotics.git",
+        "commit": "cc46c3b86c70a5012f8f8e5ff5fdcc95835e7f31"
+    },
+    "email": null,
+    "root": "/n/data1/hms/dbmi/farhat/alex/Lyme_Antibiotics",
+    "host": "compute-g-16-176.o2.rc.hms.harvard.edu",
+    "username": "aw274",
+    "executable": "/home/aw274/.conda/envs/chemprop/bin/python",
+    "cpu_count": 20,
+    "cpu_count_logical": 20,
+    "cpu_freq": {
+        "current": 1246.7077999999997,
+        "min": 1200.0,
+        "max": 3000.0
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 1480.596,
+            "min": 1200.0,
+            "max": 3000.0
+        },
+        {
+            "current": 1199.975,
+            "min": 1200.0,
+            "max": 3000.0
+        },
+        {
+            "current": 1199.975,
+            "min": 1200.0,
+            "max": 3000.0
+        },
+        {
+            "current": 1199.975,
+            "min": 1200.0,
+            "max": 3000.0
+        },
+        {
+            "current": 1199.975,
+            "min": 1200.0,
+            "max": 3000.0
+        },
+        {
+            "current": 1199.975,
+            "min": 1200.0,
+            "max": 3000.0
+        },
+        {
+            "current": 1200.115,
+            "min": 1200.0,
+            "max": 3000.0
+        },
+        {
+            "current": 1199.975,
+            "min": 1200.0,
+            "max": 3000.0
+        },
+        {
+            "current": 1199.975,
+            "min": 1200.0,
+            "max": 3000.0
+        },
+        {
+            "current": 1201.098,
+            "min": 1200.0,
+            "max": 3000.0
+        },
+        {
+            "current": 1497.723,
+            "min": 1200.0,
+            "max": 3000.0
+        },
+        {
+            "current": 1199.975,
+            "min": 1200.0,
+            "max": 3000.0
+        },
+        {
+            "current": 1299.926,
+            "min": 1200.0,
+            "max": 3000.0
+        },
+        {
+            "current": 1199.975,
+            "min": 1200.0,
+            "max": 3000.0
+        },
+        {
+            "current": 1253.601,
+            "min": 1200.0,
+            "max": 3000.0
+        },
+        {
+            "current": 1299.926,
+            "min": 1200.0,
+            "max": 3000.0
+        },
+        {
+            "current": 1199.975,
+            "min": 1200.0,
+            "max": 3000.0
+        },
+        {
+            "current": 1199.975,
+            "min": 1200.0,
+            "max": 3000.0
+        },
+        {
+            "current": 1286.73,
+            "min": 1200.0,
+            "max": 3000.0
+        },
+        {
+            "current": 1364.08,
+            "min": 1200.0,
+            "max": 3000.0
+        }
+    ],
+    "disk": {
+        "/": {
+            "total": 19.521484375,
+            "used": 7.620368957519531
+        }
+    },
+    "gpu": "Tesla M40",
+    "gpu_count": 1,
+    "gpu_devices": [
+        {
+            "name": "Tesla M40",
+            "memory_total": 12079595520
+        }
+    ],
+    "memory": {
+        "total": 251.6375846862793
+    }
+}

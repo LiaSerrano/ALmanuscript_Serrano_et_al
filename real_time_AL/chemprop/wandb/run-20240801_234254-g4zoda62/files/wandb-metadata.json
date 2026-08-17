@@ -1,0 +1,224 @@
+{
+    "os": "Linux-3.10.0-1160.119.1.el7.x86_64-x86_64-with-glibc2.10",
+    "python": "3.8.19",
+    "heartbeatAt": "2024-08-02T03:42:59.727626",
+    "startedAt": "2024-08-02T03:42:54.407963",
+    "docker": null,
+    "cuda": null,
+    "args": [
+        "--data_path",
+        "/n/data1/hms/dbmi/farhat/alex/Lyme_Antibiotics/labeled_data/ecoli/classification/ICCB_ecoli_binary_data_20240801.csv",
+        "--dataset_type",
+        "classification",
+        "--save_dir",
+        "/n/data1/hms/dbmi/farhat/alex/Lyme_Antibiotics/model_checkpoints/ecoli/`date +%Y%m%d-%H%M`/",
+        "--split_type",
+        "random",
+        "--num_folds",
+        "5",
+        "--metric",
+        "auc",
+        "--extra_metrics",
+        "binary_cross_entropy",
+        "prc-auc",
+        "--loss_function",
+        "dirichlet",
+        "--evidential_regularization",
+        "0.2",
+        "--wandb_group_name",
+        "Ecoli_Evidential_Classification",
+        "--class_balance",
+        "--epochs",
+        "200",
+        "--features_generator",
+        "rdkit_2d_normalized",
+        "--no_features_scaling"
+    ],
+    "state": "running",
+    "program": "train.py",
+    "codePathLocal": "train.py",
+    "codePath": "run_training/train.py",
+    "git": {
+        "remote": "https://github.com/AlexWei21/Lyme_Antibiotics.git",
+        "commit": "5bffcc7ad49d3f5ce7621a5e57766d1e0787b3d6"
+    },
+    "email": null,
+    "root": "/n/data1/hms/dbmi/farhat/alex/Lyme_Antibiotics",
+    "host": "compute-g-16-177.o2.rc.hms.harvard.edu",
+    "username": "aw274",
+    "executable": "/home/aw274/.conda/envs/chemprop/bin/python",
+    "cpu_count": 24,
+    "cpu_count_logical": 24,
+    "cpu_freq": {
+        "current": 1752.1661666666669,
+        "min": 1200.0,
+        "max": 3300.0
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 3251.8,
+            "min": 1200.0,
+            "max": 3300.0
+        },
+        {
+            "current": 2899.932,
+            "min": 1200.0,
+            "max": 3300.0
+        },
+        {
+            "current": 1399.078,
+            "min": 1200.0,
+            "max": 3300.0
+        },
+        {
+            "current": 2899.932,
+            "min": 1200.0,
+            "max": 3300.0
+        },
+        {
+            "current": 1800.079,
+            "min": 1200.0,
+            "max": 3300.0
+        },
+        {
+            "current": 1299.591,
+            "min": 1200.0,
+            "max": 3300.0
+        },
+        {
+            "current": 1200.408,
+            "min": 1200.0,
+            "max": 3300.0
+        },
+        {
+            "current": 2899.932,
+            "min": 1200.0,
+            "max": 3300.0
+        },
+        {
+            "current": 1499.938,
+            "min": 1200.0,
+            "max": 3300.0
+        },
+        {
+            "current": 2899.932,
+            "min": 1200.0,
+            "max": 3300.0
+        },
+        {
+            "current": 1595.153,
+            "min": 1200.0,
+            "max": 3300.0
+        },
+        {
+            "current": 2899.932,
+            "min": 1200.0,
+            "max": 3300.0
+        },
+        {
+            "current": 1205.291,
+            "min": 1200.0,
+            "max": 3300.0
+        },
+        {
+            "current": 1296.386,
+            "min": 1200.0,
+            "max": 3300.0
+        },
+        {
+            "current": 1298.98,
+            "min": 1200.0,
+            "max": 3300.0
+        },
+        {
+            "current": 1296.081,
+            "min": 1200.0,
+            "max": 3300.0
+        },
+        {
+            "current": 1200.256,
+            "min": 1200.0,
+            "max": 3300.0
+        },
+        {
+            "current": 1199.951,
+            "min": 1200.0,
+            "max": 3300.0
+        },
+        {
+            "current": 2192.535,
+            "min": 1200.0,
+            "max": 3300.0
+        },
+        {
+            "current": 1199.951,
+            "min": 1200.0,
+            "max": 3300.0
+        },
+        {
+            "current": 1200.103,
+            "min": 1200.0,
+            "max": 3300.0
+        },
+        {
+            "current": 1207.427,
+            "min": 1200.0,
+            "max": 3300.0
+        },
+        {
+            "current": 1199.951,
+            "min": 1200.0,
+            "max": 3300.0
+        },
+        {
+            "current": 1398.315,
+            "min": 1200.0,
+            "max": 3300.0
+        }
+    ],
+    "disk": {
+        "/": {
+            "total": 19.513671875,
+            "used": 7.758995056152344
+        }
+    },
+    "gpu": "Tesla K80",
+    "gpu_count": 8,
+    "gpu_devices": [
+        {
+            "name": "Tesla K80",
+            "memory_total": 11996954624
+        },
+        {
+            "name": "Tesla K80",
+            "memory_total": 11996954624
+        },
+        {
+            "name": "Tesla K80",
+            "memory_total": 11996954624
+        },
+        {
+            "name": "Tesla K80",
+            "memory_total": 11996954624
+        },
+        {
+            "name": "Tesla K80",
+            "memory_total": 11996954624
+        },
+        {
+            "name": "Tesla K80",
+            "memory_total": 11996954624
+        },
+        {
+            "name": "Tesla K80",
+            "memory_total": 11996954624
+        },
+        {
+            "name": "Tesla K80",
+            "memory_total": 11996954624
+        }
+    ],
+    "memory": {
+        "total": 251.65393447875977
+    }
+}

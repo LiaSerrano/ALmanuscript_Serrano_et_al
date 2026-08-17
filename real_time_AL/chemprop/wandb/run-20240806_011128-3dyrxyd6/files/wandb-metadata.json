@@ -1,0 +1,180 @@
+{
+    "os": "Linux-3.10.0-1160.119.1.el7.x86_64-x86_64-with-glibc2.10",
+    "python": "3.8.19",
+    "heartbeatAt": "2024-08-06T05:11:28.882540",
+    "startedAt": "2024-08-06T05:11:28.244233",
+    "docker": null,
+    "cuda": null,
+    "args": [
+        "--data_path",
+        "/n/data1/hms/dbmi/farhat/alex/Lyme_Antibiotics/batch_selection/tb_simulation/uncertainty_ucb_guided/output/Batch_2/cumulative_screening_results.csv",
+        "--smiles_columns",
+        "SMILES",
+        "--target_columns",
+        "inhibition",
+        "--dataset_type",
+        "classification",
+        "--save_dir",
+        "/n/data1/hms/dbmi/farhat/alex/Lyme_Antibiotics/batch_selection/tb_simulation/uncertainty_ucb_guided/output/Batch_3/evidential_classification_checkpoint",
+        "--split_type",
+        "random",
+        "--num_folds",
+        "1",
+        "--metric",
+        "auc",
+        "--extra_metrics",
+        "binary_cross_entropy",
+        "prc-auc",
+        "--loss_function",
+        "dirichlet",
+        "--evidential_regularization",
+        "0.2",
+        "--wandb_group_name",
+        "TB_AL_Batch3_Evidential_Classification",
+        "--class_balance",
+        "--epochs",
+        "200",
+        "--features_generator",
+        "rdkit_2d_normalized",
+        "--no_features_scaling"
+    ],
+    "state": "running",
+    "program": "train.py",
+    "codePathLocal": "train.py",
+    "codePath": "run_training/train.py",
+    "git": {
+        "remote": "https://github.com/AlexWei21/Lyme_Antibiotics.git",
+        "commit": "765cabd9efc0401a0fb50be1a772cfdf085614f0"
+    },
+    "email": null,
+    "root": "/n/data1/hms/dbmi/farhat/alex/Lyme_Antibiotics",
+    "host": "compute-g-16-176.o2.rc.hms.harvard.edu",
+    "username": "aw274",
+    "executable": "/home/aw274/.conda/envs/chemprop/bin/python",
+    "cpu_count": 20,
+    "cpu_count_logical": 20,
+    "cpu_freq": {
+        "current": 1333.41415,
+        "min": 1200.0,
+        "max": 3000.0
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 1199.975,
+            "min": 1200.0,
+            "max": 3000.0
+        },
+        {
+            "current": 1228.894,
+            "min": 1200.0,
+            "max": 3000.0
+        },
+        {
+            "current": 1300.067,
+            "min": 1200.0,
+            "max": 3000.0
+        },
+        {
+            "current": 1202.642,
+            "min": 1200.0,
+            "max": 3000.0
+        },
+        {
+            "current": 1207.556,
+            "min": 1200.0,
+            "max": 3000.0
+        },
+        {
+            "current": 1499.267,
+            "min": 1200.0,
+            "max": 3000.0
+        },
+        {
+            "current": 1199.975,
+            "min": 1200.0,
+            "max": 3000.0
+        },
+        {
+            "current": 1202.362,
+            "min": 1200.0,
+            "max": 3000.0
+        },
+        {
+            "current": 1251.635,
+            "min": 1200.0,
+            "max": 3000.0
+        },
+        {
+            "current": 1200.115,
+            "min": 1200.0,
+            "max": 3000.0
+        },
+        {
+            "current": 2930.45,
+            "min": 1200.0,
+            "max": 3000.0
+        },
+        {
+            "current": 1199.975,
+            "min": 1200.0,
+            "max": 3000.0
+        },
+        {
+            "current": 1398.193,
+            "min": 1200.0,
+            "max": 3000.0
+        },
+        {
+            "current": 1206.433,
+            "min": 1200.0,
+            "max": 3000.0
+        },
+        {
+            "current": 1200.115,
+            "min": 1200.0,
+            "max": 3000.0
+        },
+        {
+            "current": 1399.737,
+            "min": 1200.0,
+            "max": 3000.0
+        },
+        {
+            "current": 1199.975,
+            "min": 1200.0,
+            "max": 3000.0
+        },
+        {
+            "current": 1199.835,
+            "min": 1200.0,
+            "max": 3000.0
+        },
+        {
+            "current": 1228.613,
+            "min": 1200.0,
+            "max": 3000.0
+        },
+        {
+            "current": 1296.838,
+            "min": 1200.0,
+            "max": 3000.0
+        }
+    ],
+    "disk": {
+        "/": {
+            "total": 19.521484375,
+            "used": 7.619197845458984
+        }
+    },
+    "gpu": "Tesla M40",
+    "gpu_count": 1,
+    "gpu_devices": [
+        {
+            "name": "Tesla M40",
+            "memory_total": 12079595520
+        }
+    ],
+    "memory": {
+        "total": 251.6375846862793
+    }
+}

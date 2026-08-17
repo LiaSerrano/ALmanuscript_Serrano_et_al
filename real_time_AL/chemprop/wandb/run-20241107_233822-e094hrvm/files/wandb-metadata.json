@@ -1,0 +1,252 @@
+{
+    "os": "Linux-3.10.0-1160.119.1.el7.tuxcare.els7.x86_64-x86_64-with-glibc2.10",
+    "python": "3.8.19",
+    "heartbeatAt": "2024-11-08T04:38:32.766161",
+    "startedAt": "2024-11-08T04:38:22.980746",
+    "docker": null,
+    "cuda": null,
+    "args": [
+        "--data_path",
+        "/n/data1/hms/dbmi/farhat/alex/Lyme_Antibiotics/batch_selection/lyme_selective_inhibition/batch_3/training_data/bb.csv",
+        "--smiles_columns",
+        "SMILES",
+        "--target_columns",
+        "Bb_Inhibition_%ctl",
+        "--dataset_type",
+        "classification",
+        "--save_dir",
+        "/n/data1/hms/dbmi/farhat/alex/Lyme_Antibiotics/batch_selection/lyme_selective_inhibition/batch_3/checkpoints/bb_pcontrol_model_checkpoint/",
+        "--split_type",
+        "scaffold_balanced",
+        "--num_folds",
+        "5",
+        "--metric",
+        "auc",
+        "--extra_metrics",
+        "binary_cross_entropy",
+        "prc-auc",
+        "--loss_function",
+        "dirichlet",
+        "--evidential_regularization",
+        "0.2",
+        "--wandb_group_name",
+        "Selective Lyme Antibiotics Batch3 Bb Inhibition %Control",
+        "--class_balance",
+        "--epochs",
+        "200",
+        "--features_generator",
+        "rdkit_2d_normalized",
+        "--no_features_scaling"
+    ],
+    "state": "running",
+    "program": "train.py",
+    "codePathLocal": "train.py",
+    "codePath": "run_training/train.py",
+    "git": {
+        "remote": "https://github.com/AlexWei21/Lyme_Antibiotics.git",
+        "commit": "a9f0fd1cbcd1ecab6f902cf37d2cf5d0ef1fb63c"
+    },
+    "email": null,
+    "root": "/n/data1/hms/dbmi/farhat/alex/Lyme_Antibiotics",
+    "host": "compute-g-16-254.o2.rc.hms.harvard.edu",
+    "username": "aw274",
+    "executable": "/home/aw274/.conda/envs/chemprop/bin/python",
+    "cpu_count": 32,
+    "cpu_count_logical": 32,
+    "cpu_freq": {
+        "current": 1549.5010000000002,
+        "min": 1000.0,
+        "max": 3700.0
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 2089.105,
+            "min": 1000.0,
+            "max": 3700.0
+        },
+        {
+            "current": 1197.784,
+            "min": 1000.0,
+            "max": 3700.0
+        },
+        {
+            "current": 1394.915,
+            "min": 1000.0,
+            "max": 3700.0
+        },
+        {
+            "current": 3097.576,
+            "min": 1000.0,
+            "max": 3700.0
+        },
+        {
+            "current": 1000.012,
+            "min": 1000.0,
+            "max": 3700.0
+        },
+        {
+            "current": 1291.864,
+            "min": 1000.0,
+            "max": 3700.0
+        },
+        {
+            "current": 1582.69,
+            "min": 1000.0,
+            "max": 3700.0
+        },
+        {
+            "current": 2187.542,
+            "min": 1000.0,
+            "max": 3700.0
+        },
+        {
+            "current": 2299.951,
+            "min": 1000.0,
+            "max": 3700.0
+        },
+        {
+            "current": 999.884,
+            "min": 1000.0,
+            "max": 3700.0
+        },
+        {
+            "current": 2696.905,
+            "min": 1000.0,
+            "max": 3700.0
+        },
+        {
+            "current": 1499.249,
+            "min": 1000.0,
+            "max": 3700.0
+        },
+        {
+            "current": 1995.41,
+            "min": 1000.0,
+            "max": 3700.0
+        },
+        {
+            "current": 3194.348,
+            "min": 1000.0,
+            "max": 3700.0
+        },
+        {
+            "current": 2795.343,
+            "min": 1000.0,
+            "max": 3700.0
+        },
+        {
+            "current": 2995.935,
+            "min": 1000.0,
+            "max": 3700.0
+        },
+        {
+            "current": 1399.914,
+            "min": 1000.0,
+            "max": 3700.0
+        },
+        {
+            "current": 1193.298,
+            "min": 1000.0,
+            "max": 3700.0
+        },
+        {
+            "current": 1697.534,
+            "min": 1000.0,
+            "max": 3700.0
+        },
+        {
+            "current": 1187.658,
+            "min": 1000.0,
+            "max": 3700.0
+        },
+        {
+            "current": 1500.018,
+            "min": 1000.0,
+            "max": 3700.0
+        },
+        {
+            "current": 1000.012,
+            "min": 1000.0,
+            "max": 3700.0
+        },
+        {
+            "current": 1488.226,
+            "min": 1000.0,
+            "max": 3700.0
+        },
+        {
+            "current": 999.884,
+            "min": 1000.0,
+            "max": 3700.0
+        },
+        {
+            "current": 1399.914,
+            "min": 1000.0,
+            "max": 3700.0
+        },
+        {
+            "current": 1000.012,
+            "min": 1000.0,
+            "max": 3700.0
+        },
+        {
+            "current": 1099.987,
+            "min": 1000.0,
+            "max": 3700.0
+        },
+        {
+            "current": 999.884,
+            "min": 1000.0,
+            "max": 3700.0
+        },
+        {
+            "current": 1099.987,
+            "min": 1000.0,
+            "max": 3700.0
+        },
+        {
+            "current": 1051.794,
+            "min": 1000.0,
+            "max": 3700.0
+        },
+        {
+            "current": 1099.987,
+            "min": 1000.0,
+            "max": 3700.0
+        },
+        {
+            "current": 1012.957,
+            "min": 1000.0,
+            "max": 3700.0
+        }
+    ],
+    "disk": {
+        "/": {
+            "total": 19.513671875,
+            "used": 8.271015167236328
+        }
+    },
+    "gpu": "Tesla V100-SXM2-16GB",
+    "gpu_count": 4,
+    "gpu_devices": [
+        {
+            "name": "Tesla V100-SXM2-16GB",
+            "memory_total": 17179869184
+        },
+        {
+            "name": "Tesla V100-SXM2-16GB",
+            "memory_total": 17179869184
+        },
+        {
+            "name": "Tesla V100-SXM2-16GB",
+            "memory_total": 17179869184
+        },
+        {
+            "name": "Tesla V100-SXM2-16GB",
+            "memory_total": 17179869184
+        }
+    ],
+    "memory": {
+        "total": 376.35741806030273
+    }
+}

@@ -1,0 +1,320 @@
+{
+    "os": "Linux-3.10.0-1160.119.1.el7.tuxcare.els13.x86_64-x86_64-with-glibc2.10",
+    "python": "3.8.19",
+    "heartbeatAt": "2025-01-23T06:47:50.954603",
+    "startedAt": "2025-01-23T06:47:45.493371",
+    "docker": null,
+    "cuda": null,
+    "args": [
+        "--data_path",
+        "/n/data1/hms/dbmi/farhat/alex/Lyme_Antibiotics/batch_selection/lyme_selective_inhibition/batch_3.5/training_data/bb.csv",
+        "--smiles_columns",
+        "SMILES",
+        "--target_columns",
+        "Bb_Inhibition_%ctl",
+        "--dataset_type",
+        "classification",
+        "--save_dir",
+        "/n/data1/hms/dbmi/farhat/alex/Lyme_Antibiotics/batch_selection/lyme_selective_inhibition/batch_3.5/checkpoints/bb_pcontrol_model_checkpoint/",
+        "--split_type",
+        "scaffold_balanced",
+        "--num_folds",
+        "5",
+        "--metric",
+        "auc",
+        "--extra_metrics",
+        "binary_cross_entropy",
+        "prc-auc",
+        "--loss_function",
+        "dirichlet",
+        "--evidential_regularization",
+        "0.2",
+        "--wandb_group_name",
+        "Selective Lyme Antibiotics Batch3.5 Bb Inhibition %Control",
+        "--class_balance",
+        "--epochs",
+        "200",
+        "--features_generator",
+        "rdkit_2d_normalized",
+        "--no_features_scaling"
+    ],
+    "state": "running",
+    "program": "train.py",
+    "codePathLocal": "train.py",
+    "codePath": "run_training/train.py",
+    "git": {
+        "remote": "https://github.com/AlexWei21/Lyme_Antibiotics.git",
+        "commit": "ef05062ac7c41dc2e319ba4b28887861d698705b"
+    },
+    "email": null,
+    "root": "/n/data1/hms/dbmi/farhat/alex/Lyme_Antibiotics",
+    "host": "compute-g-17-145.o2.rc.hms.harvard.edu",
+    "username": "aw274",
+    "executable": "/home/aw274/.conda/envs/chemprop/bin/python",
+    "cpu_count": 48,
+    "cpu_count_logical": 48,
+    "cpu_freq": {
+        "current": 1562.522541666666,
+        "min": 1200.0,
+        "max": 4000.0
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 3775.634,
+            "min": 1200.0,
+            "max": 4000.0
+        },
+        {
+            "current": 1398.925,
+            "min": 1200.0,
+            "max": 4000.0
+        },
+        {
+            "current": 1200.073,
+            "min": 1200.0,
+            "max": 4000.0
+        },
+        {
+            "current": 1200.073,
+            "min": 1200.0,
+            "max": 4000.0
+        },
+        {
+            "current": 1395.08,
+            "min": 1200.0,
+            "max": 4000.0
+        },
+        {
+            "current": 1199.89,
+            "min": 1200.0,
+            "max": 4000.0
+        },
+        {
+            "current": 1200.256,
+            "min": 1200.0,
+            "max": 4000.0
+        },
+        {
+            "current": 3702.941,
+            "min": 1200.0,
+            "max": 4000.0
+        },
+        {
+            "current": 1200.073,
+            "min": 1200.0,
+            "max": 4000.0
+        },
+        {
+            "current": 1200.073,
+            "min": 1200.0,
+            "max": 4000.0
+        },
+        {
+            "current": 1200.073,
+            "min": 1200.0,
+            "max": 4000.0
+        },
+        {
+            "current": 3702.758,
+            "min": 1200.0,
+            "max": 4000.0
+        },
+        {
+            "current": 1200.073,
+            "min": 1200.0,
+            "max": 4000.0
+        },
+        {
+            "current": 2197.265,
+            "min": 1200.0,
+            "max": 4000.0
+        },
+        {
+            "current": 1200.256,
+            "min": 1200.0,
+            "max": 4000.0
+        },
+        {
+            "current": 1300.048,
+            "min": 1200.0,
+            "max": 4000.0
+        },
+        {
+            "current": 1199.89,
+            "min": 1200.0,
+            "max": 4000.0
+        },
+        {
+            "current": 1200.073,
+            "min": 1200.0,
+            "max": 4000.0
+        },
+        {
+            "current": 1200.073,
+            "min": 1200.0,
+            "max": 4000.0
+        },
+        {
+            "current": 1223.876,
+            "min": 1200.0,
+            "max": 4000.0
+        },
+        {
+            "current": 1199.89,
+            "min": 1200.0,
+            "max": 4000.0
+        },
+        {
+            "current": 1200.073,
+            "min": 1200.0,
+            "max": 4000.0
+        },
+        {
+            "current": 1200.073,
+            "min": 1200.0,
+            "max": 4000.0
+        },
+        {
+            "current": 1395.812,
+            "min": 1200.0,
+            "max": 4000.0
+        },
+        {
+            "current": 3785.339,
+            "min": 1200.0,
+            "max": 4000.0
+        },
+        {
+            "current": 3699.829,
+            "min": 1200.0,
+            "max": 4000.0
+        },
+        {
+            "current": 1199.89,
+            "min": 1200.0,
+            "max": 4000.0
+        },
+        {
+            "current": 1199.89,
+            "min": 1200.0,
+            "max": 4000.0
+        },
+        {
+            "current": 1200.073,
+            "min": 1200.0,
+            "max": 4000.0
+        },
+        {
+            "current": 1281.188,
+            "min": 1200.0,
+            "max": 4000.0
+        },
+        {
+            "current": 1200.073,
+            "min": 1200.0,
+            "max": 4000.0
+        },
+        {
+            "current": 1200.073,
+            "min": 1200.0,
+            "max": 4000.0
+        },
+        {
+            "current": 3775.634,
+            "min": 1200.0,
+            "max": 4000.0
+        },
+        {
+            "current": 1202.636,
+            "min": 1200.0,
+            "max": 4000.0
+        },
+        {
+            "current": 1199.89,
+            "min": 1200.0,
+            "max": 4000.0
+        },
+        {
+            "current": 1218.017,
+            "min": 1200.0,
+            "max": 4000.0
+        },
+        {
+            "current": 1199.89,
+            "min": 1200.0,
+            "max": 4000.0
+        },
+        {
+            "current": 1200.073,
+            "min": 1200.0,
+            "max": 4000.0
+        },
+        {
+            "current": 1200.073,
+            "min": 1200.0,
+            "max": 4000.0
+        },
+        {
+            "current": 1200.073,
+            "min": 1200.0,
+            "max": 4000.0
+        },
+        {
+            "current": 1200.073,
+            "min": 1200.0,
+            "max": 4000.0
+        },
+        {
+            "current": 1238.525,
+            "min": 1200.0,
+            "max": 4000.0
+        },
+        {
+            "current": 1200.073,
+            "min": 1200.0,
+            "max": 4000.0
+        },
+        {
+            "current": 1200.256,
+            "min": 1200.0,
+            "max": 4000.0
+        },
+        {
+            "current": 1200.073,
+            "min": 1200.0,
+            "max": 4000.0
+        },
+        {
+            "current": 1199.89,
+            "min": 1200.0,
+            "max": 4000.0
+        },
+        {
+            "current": 1199.89,
+            "min": 1200.0,
+            "max": 4000.0
+        },
+        {
+            "current": 1382.995,
+            "min": 1200.0,
+            "max": 4000.0
+        }
+    ],
+    "disk": {
+        "/": {
+            "total": 19.521484375,
+            "used": 7.967403411865234
+        }
+    },
+    "gpu": "Quadro RTX 8000",
+    "gpu_count": 1,
+    "gpu_devices": [
+        {
+            "name": "Quadro RTX 8000",
+            "memory_total": 48318382080
+        }
+    ],
+    "memory": {
+        "total": 754.1657485961914
+    }
+}

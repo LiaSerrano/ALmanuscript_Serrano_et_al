@@ -1,0 +1,1 @@
+{"validation_auc": 0.974810325684678, "_timestamp": 1731058850.1967492, "_runtime": 12566.054606199265, "_step": 314, "validation_binary_cross_entropy": 0.16311679780483246, "validation_prc-auc": 0.584996244340281, "train_loss": 0.08472117334604264, "param_norm": 38.03300565193465, "gradient_norm": 0.051673599457087147, "learning_rate": 0.0009954848272697384}
