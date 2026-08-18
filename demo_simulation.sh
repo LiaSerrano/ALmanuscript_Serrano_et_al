@@ -12,11 +12,11 @@ module load conda/miniforge3/24.11.3-0
 module load gcc/14.2.0
 module load python/3.13.1
 module load cuda/12.8
-source ~/chemprop_env/bin/activate
+conda activate almanuscript_env
 
 
 python "Simulations.py" --acquisition_strategy "batch_selection" \
                         --task ecoli \
-                        --initial_train_plates /n/data1/hms/dbmi/farhat/LRS/ALmanuscript_Serrano_et_al/demo_data/starting_plate.csv \
-                        --data_path /n/data1/hms/dbmi/farhat/LRS/ALmanuscript_Serrano_et_al/demo_data/demo_train.csv \
-                        --out_dir /n/data1/hms/dbmi/farhat/LRS/ALmanuscript_Serrano_et_al/demo_data/simulation_output
+                        --initial_train_plates demo_data/starting_plate.csv \
+                        --data_path demo_data/demo_train.csv \
+                        --out_dir demo_data/simulation_output
