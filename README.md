@@ -66,7 +66,7 @@ The original computational environment used **CUDA 12.8**. CUDA installation and
 
 ## Instructions for demonstrations
 
-The demonstration workflow was developed and tested in an HPC environment. Commands and shell script formatting should be adjusted as needed. 
+The demonstration workflow was developed and tested in an HPC environment (Operating system: Red Hat Enterprise Linux (RHEL) 9.8). Commands and shell script formatting should be adjusted as needed. 
 
 To test the script used for Figure 2, run the following (ALmanuscript_Serrano_et_al/):
 
