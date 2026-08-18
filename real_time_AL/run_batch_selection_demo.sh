@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH -c 2
-#SBATCH -t 72:00:00
+#SBATCH -t 5-00:00
 #SBATCH -p gpu_quad
 #SBATCH --mem=45G
 #SBATCH -o run_logs/hostname_%j.out
