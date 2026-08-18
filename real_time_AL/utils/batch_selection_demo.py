@@ -7,14 +7,17 @@ from rdkit.ML.Cluster import Butina
 from tqdm import tqdm
 import rationale_utils
 import argparse
+import os
 
 def plate_scoring(
-                  ecoli_prediction_df: pd.DataFrame,
-                  ecoli_prediction_target_name: str,
-                  ecoli_train_df: pd.DataFrame,
-                  novelty_weight: float,
-                  novelty_threshold: float,
-                  ecoli_rationale_df: pd.DataFrame):
+                ecoli_prediction_df: pd.DataFrame,
+                ecoli_prediction_target_name: str,
+                ecoli_train_df: pd.DataFrame,
+                novelty_weight: float,
+                novelty_threshold: float,
+                ecoli_rationale_df: pd.DataFrame,
+                output_dir: str,
+            ):
     
     if ecoli_prediction_df is None:
         print("No Ecoli Prediction provided")
@@ -174,31 +177,64 @@ def plate_scoring(
 
     ## E.coli - Save Rank File
     ecoli_rank_df = ecoli_rank_df.drop(["rationales","filtered_rationales_mol", "rationales_mol"], axis = 1)
-    ecoli_rank_df.to_csv(f'/demo_data/scores.csv',
-                         index = False)
+    os.makedirs(output_dir, exist_ok=True)
+
+    ecoli_rank_df.to_csv(
+        os.path.join(output_dir, "scores.csv"),
+        index=False
+    )
 
     return ecoli_rank_df
 
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--output_dir",
+        type=str,
+        required=True,
+        help="Directory to save batch-selection scores"
+    )
+
+    parser.add_argument(
+        "--ecoli_train_path",
+        type=str,
+        required=True,
+        help="Path to E. coli training CSV"
+    )
+
+    parser.add_argument(
+        "--ecoli_prediction_path",
+        type=str,
+        required=True,
+        help="Path to E. coli prediction CSV"
+    )
+
+    parser.add_argument(
+        "--ecoli_rationale_path",
+        type=str,
+        required=True,
+        help="Path to E. coli rationale CSV"
+    )
 
     args = parser.parse_args()
 
     # E.coli Dataframes
-    ecoli_train_dir = f'/demo_data/ecoli.csv'
-    ecoli_prediction_dir = f'/demo_data/ecoli_pcontrol.csv'
-    ecoli_rationale_dir = f'/demo_data/ecoli_rationale.csv'
+    ecoli_train_dir = args.ecoli_train_path
+    ecoli_prediction_dir = args.ecoli_prediction_path
+    ecoli_rationale_dir = args.ecoli_rationale_path
 
     # Load 
     ecoli_train_df = pd.read_csv(ecoli_train_dir)
     ecoli_prediction_df = pd.read_csv(ecoli_prediction_dir)
     ecoli_rationale_df = pd.read_csv(ecoli_rationale_dir)
 
-    bb_rank_df, ecoli_rank_df = plate_scoring(
-                                              ecoli_prediction_df=ecoli_prediction_df,
-                                              ecoli_prediction_target_name='Ecoli_Inhibition_%ctl',
-                                              ecoli_train_df = ecoli_train_df,
-                                              novelty_weight = 1,
-                                              novelty_threshold=0.5,
-                                              ecoli_rationale_df = ecoli_rationale_df)
+    ecoli_rank_df = plate_scoring(
+        ecoli_prediction_df=ecoli_prediction_df,
+        ecoli_prediction_target_name='Y',
+        ecoli_train_df=ecoli_train_df,
+        novelty_weight=1,
+        novelty_threshold=0.5,
+        ecoli_rationale_df=ecoli_rationale_df,
+        output_dir=args.output_dir,
+    )
