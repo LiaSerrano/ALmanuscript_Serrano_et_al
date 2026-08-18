@@ -1,59 +1,61 @@
 #!/bin/bash
 #SBATCH -c 2
-#SBATCH -t 1:00:00
-#SBATCH -p priority
-#SBATCH --mem=5G
+#SBATCH -t 72:00:00
+#SBATCH -p gpu_quad
+#SBATCH --mem=45G
 #SBATCH -o run_logs/hostname_%j.out
 #SBATCH -e run_logs/hostname_%j.err
 
-##### -t 72:00:00
-##### -p gpu_quad
-#####--mem=45G
+set -e
 
 module load conda/miniforge3/24.11.3-0
 module load gcc/14.2.0
-module load python/3.13.1
 module load cuda/12.8
-source ~/chemprop_env/bin/activate
+
+conda activate almanuscript_env
 
 
-cd /n/data1/hms/dbmi/farhat/LRS/ALmanuscript_Serrano_et_al/real_time_AL/utils
-
-#python get_remaining_molecules_demo.py \
- #   --previously_screened /n/data1/hms/dbmi/farhat/LRS/ALmanuscript_Serrano_et_al/demo_data/previously_screened_demo.csv \
-  #  --remaining_pool /n/data1/hms/dbmi/farhat/LRS/ALmanuscript_Serrano_et_al/demo_data/remaining_pool_demo.csv \
-  #  --output_dir /n/data1/hms/dbmi/farhat/LRS/ALmanuscript_Serrano_et_al/demo_data/real_time_AL_output
-
-python generateMiniMolInputs.py \
-    --features_path /n/data1/hms/dbmi/farhat/LRS/ALmanuscript_Serrano_et_al/demo_data/demo_ecoli_features.pkl \
-    --remaining_unscreened_path /n/data1/hms/dbmi/farhat/LRS/ALmanuscript_Serrano_et_al/demo_data/real_time_AL_output/remaining_unscreened_molecules.csv \
-    --training_ecoli_path /n/data1/hms/dbmi/farhat/LRS/ALmanuscript_Serrano_et_al/demo_data/demo_train.csv \
-    --training_output_csv /n/data1/hms/dbmi/farhat/LRS/ALmanuscript_Serrano_et_al/demo_data/real_time_AL_output/ecoli_filt.csv \
-    --training_output_npz /n/data1/hms/dbmi/farhat/LRS/ALmanuscript_Serrano_et_al/demo_data/real_time_AL_output/ecoli_filt.npz \
-    --remaining_output_csv /n/data1/hms/dbmi/farhat/LRS/ALmanuscript_Serrano_et_al/demo_data/real_time_AL_output/remaining_unscreened_molecules_filt.csv \
-    --remaining_output_npz /n/data1/hms/dbmi/farhat/LRS/ALmanuscript_Serrano_et_al/demo_data/real_time_AL_output/remaining_unscreened_molecules_filt.npz
+# Run from the root of ALmanuscript_Serrano_et_al
+python real_time_AL/utils/get_remaining_molecules_demo.py \
+    --previously_screened demo_data/previously_screened_demo.csv \
+    --remaining_pool demo_data/remaining_pool_demo.csv \
+    --output_dir demo_data/real_time_AL_output
 
 
-#bash train_demo.sh
-
-#bash predict.sh
-
-#python get_rationale_MCTS_demo.py \
- # --data_path /demo_data/model_predictions/ecoli_pcontrol.csv \
-  #--output_dir /demo_data/ \
-  #--output_file rationales.csv \
-  #--property_name Y \
-  #--features_dict_path demo_ecoli_features.npz \
-  #--n_processes 1 \
-  #--missing_features parent \
-  #--device cpu \
-  #--model_paths \
-   # /path/to/fold_0/model_0/model.pt \
-   # /path/to/fold_1/model_0/model.pt \
-   # /path/to/fold_2/model_0/model.pt \
-   # /path/to/fold_3/model_0/model.pt \
-   # /path/to/fold_4/model_0/model.pt
+python real_time_AL/utils/generateMiniMolInputs.py \
+    --features_path demo_data/demo_ecoli_features.pkl \
+    --remaining_unscreened_path demo_data/real_time_AL_output/remaining_unscreened_molecules.csv \
+    --training_ecoli_path demo_data/demo_train.csv \
+    --training_output_csv demo_data/real_time_AL_output/ecoli_filt.csv \
+    --training_output_npz demo_data/real_time_AL_output/ecoli_filt.npz \
+    --remaining_output_csv demo_data/real_time_AL_output/remaining_unscreened_molecules_filt.csv \
+    --remaining_output_npz demo_data/real_time_AL_output/remaining_unscreened_molecules_filt.npz
 
 
+bash real_time_AL/utils/train_demo.sh
 
-#python batch_selection.py 
+bash real_time_AL/utils/predict.sh
+
+
+python real_time_AL/utils/get_rationale_MCTS_demo.py \
+    --data_path demo_data/real_time_AL_output/model_predictions/ecoli_pcontrol.csv \
+    --output_dir demo_data/real_time_AL_output \
+    --output_file rationales.csv \
+    --property_name Y \
+    --features_dict_path demo_data/demo_ecoli_features.pkl \
+    --n_processes 1 \
+    --missing_features parent \
+    --device cpu \
+    --model_paths \
+        demo_data/real_time_AL_output/checkpoints/fold_0/model_0/model.pt \
+        demo_data/real_time_AL_output/checkpoints/fold_1/model_0/model.pt \
+        demo_data/real_time_AL_output/checkpoints/fold_2/model_0/model.pt \
+        demo_data/real_time_AL_output/checkpoints/fold_3/model_0/model.pt \
+        demo_data/real_time_AL_output/checkpoints/fold_4/model_0/model.pt
+
+
+python real_time_AL/utils/batch_selection_demo.py \
+    --ecoli_train_path demo_data/demo_train.csv \
+    --ecoli_prediction_path demo_data/real_time_AL_output/model_predictions/ecoli_pcontrol.csv \
+    --ecoli_rationale_path demo_data/real_time_AL_output/rationales.csv \
+    --output_dir demo_data/real_time_AL_output
