@@ -12,7 +12,7 @@ module load conda/miniforge3/24.11.3-0
 module load gcc/14.2.0
 module load python/3.13.1
 module load cuda/12.8
-conda activate /n/data1/hms/dbmi/farhat/LRS/env/
+source ~/chemprop_env/bin/activate
 
 
 python "Simulations.py" --acquisition_strategy "batch_selection" \

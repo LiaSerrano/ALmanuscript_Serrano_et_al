@@ -1230,12 +1230,12 @@ if __name__ == "__main__":
         default=None
         )
     
-   parser.add_argument(
-        "--out_dir",
-        type=str,
-        required=True,
-        help="Base directory for simulation outputs"
-    )
+    parser.add_argument(
+            "--out_dir",
+            type=str,
+            required=True,
+            help="Base directory for simulation outputs"
+        )
 
     parser.add_argument(
         "--data_path",

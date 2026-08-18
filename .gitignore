@@ -1,1 +1,6 @@
 .DS_Store
+/demo_data/demo_ecoli_features.pkl
+/real_time_AL/run_logs/
+/run_logs/
+/demo_data/real_time_AL_output/
+/demo_data/simulation_output/

@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import argparse
+import os
 
 parser = argparse.ArgumentParser()
 
@@ -16,6 +17,12 @@ parser.add_argument(
     type=str,
     required=True,
     help="Path to CSV containing the remaining molecule pool"
+)
+parser.add_argument(
+    "--output_dir",
+    type=str,
+    required=True,
+    help="Directory where output files will be saved"
 )
 
 args = parser.parse_args()
@@ -43,10 +50,20 @@ remaining_molecules = remaining_molecules[
 ].copy()
 
 
+# Make output directory if it doesn't exist
+os.makedirs(args.output_dir, exist_ok=True)
+
+output_path = os.path.join(
+    args.output_dir,
+    "remaining_unscreened_molecules.csv"
+)
+
 # Save
 remaining_molecules[
-    ["Plate", "Library", "SMILES"]
+    ["Plate", "SMILES"]
 ].to_csv(
-    "demo_data/remaining_unscreened_molecules.csv",
+    output_path,
     index=False
 )
+
+print("Saved:", output_path)
