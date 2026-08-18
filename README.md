@@ -5,7 +5,7 @@ Lia R. Serrano, Andrew Zhou, Ziming Wei, Kee-Lee K Stocks, Yasha Ektefaie, Peter
 bioRxiv 2026.07.04.736489; doi: https://doi.org/10.64898/2026.07.04.736489
 
 
-Demo data provided is from the following sources:
+Demo data (ALmanuscript_Serrano_et_al/demo_data/) provided is from the following sources:
 
 1. Stokes, J. M. et al. A deep learning approach to antibiotic discovery. Cell 180, 688-702.e13 (2020)
 
@@ -62,4 +62,24 @@ The package versions in `chemprop_requirements.txt` correspond to the environmen
 Some components of the workflow may use GPU acceleration.
 
 The original computational environment used **CUDA 12.8**. CUDA installation and compatibility depend on the user's operating system, GPU hardware, and PyTorch installation, so CUDA should be configured according to the requirements of the local system.
+
+
+## Instructions for demonstrations
+
+The demonstration workflow was developed and tested in an HPC environment. Commands and shell script formatting should be adjusted as needed. 
+
+To test the script used for Figure 2, run the following (ALmanuscript_Serrano_et_al/):
+
+```bash
+sbatch demo_simulation.sh
+```
+
+To test the script used for Figure 4, run the following (ALmanuscript_Serrano_et_al/real_time_AL/):
+
+```bash
+sbatch run_batch_selection_demo.sh
+```
+
+
+
 
