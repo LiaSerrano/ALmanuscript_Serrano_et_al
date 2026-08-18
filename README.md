@@ -5,7 +5,7 @@ Lia R. Serrano, Andrew Zhou, Ziming Wei, Kee-Lee K Stocks, Yasha Ektefaie, Peter
 bioRxiv 2026.07.04.736489; doi: https://doi.org/10.64898/2026.07.04.736489
 
 
-Data provided is from the following sources:
+Demo data provided is from the following sources:
 
 1. Stokes, J. M. et al. A deep learning approach to antibiotic discovery. Cell 180, 688-702.e13 (2020)
 
@@ -19,5 +19,47 @@ Data provided is from the following sources:
    Antimicrobial HTS Assay for E. coli BW25113 (wild type) - Expanded Screen, Source: SRMLSC.
 
 
-environment dependencies are located in "chemprop_requirements.txt"
+
+# Environment Setup
+
+Python package dependencies required for this workflow are listed in:
+
+`chemprop_requirements.txt`
+
+The code was developed and tested using **Python 3.13.1**.
+
+## 1. Install Conda
+
+Install Miniconda, Miniforge, or another Conda-compatible distribution if Conda is not already available on your system.
+
+## 2. Create a New Environment
+
+Create a new Conda environment using Python 3.13.1:
+
+```bash
+conda create -n almanuscript_env python=3.13.1 -y
+```
+
+Activate the environment:
+
+```bash
+conda activate almanuscript_env
+```
+
+## 3. Install Python Dependencies
+
+From the root directory of this repository, install the required Python packages with:
+
+```bash
+pip install -r chemprop_requirements.txt
+```
+
+The package versions in `chemprop_requirements.txt` correspond to the environment used for this workflow.
+
+
+## GPU Support
+
+Some components of the workflow may use GPU acceleration.
+
+The original computational environment used **CUDA 12.8**. CUDA installation and compatibility depend on the user's operating system, GPU hardware, and PyTorch installation, so CUDA should be configured according to the requirements of the local system.
 
