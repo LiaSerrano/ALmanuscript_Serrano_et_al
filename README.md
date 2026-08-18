@@ -17,3 +17,7 @@ Data provided is from the following sources:
 
 4. National Center for Biotechnology Information (2026). PubChem Bioassay Record for AID
    Antimicrobial HTS Assay for E. coli BW25113 (wild type) - Expanded Screen, Source: SRMLSC.
+
+
+environment dependencies are located in "chemprop_requirements.txt"
+
