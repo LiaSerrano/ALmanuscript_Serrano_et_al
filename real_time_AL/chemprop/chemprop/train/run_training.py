@@ -24,7 +24,6 @@ from chemprop.models import MoleculeModel
 from chemprop.nn_utils import param_count, param_count_all
 from chemprop.utils import build_optimizer, build_lr_scheduler, load_checkpoint, makedirs, \
     save_checkpoint, save_smiles_splits, load_frzn_model, multitask_mean
-import wandb
 
 def run_training(args: TrainArgs,
                  data: MoleculeDataset,
@@ -347,9 +346,6 @@ def run_training(args: TrainArgs,
                 debug(f'Validation {metric} = {mean_val_score:.6f}')
                 writer.add_scalar(f'validation_{metric}', mean_val_score, n_iter)
 
-                wandb.log({f'validation_{metric}':mean_val_score
-                           })                
-
                 if args.show_individual_scores:
                     if args.loss_function == "quantile_interval" and metric == "quantile":
                         num_tasks = len(args.task_names) // 2
@@ -412,8 +408,6 @@ def run_training(args: TrainArgs,
                 avg_test_score = np.nanmean(scores)
                 info(f'Model {model_idx} test {metric} = {avg_test_score:.6f}')
                 writer.add_scalar(f'test_{metric}', avg_test_score, 0)
-
-                wandb.log({f'test_{metric}':avg_test_score})
 
                 if args.show_individual_scores and args.dataset_type != 'spectra':
                     # Individual test scores

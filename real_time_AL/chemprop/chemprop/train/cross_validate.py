@@ -16,7 +16,6 @@ from chemprop.constants import TEST_SCORES_FILE_NAME, TRAIN_LOGGER_NAME
 from chemprop.data import get_data, get_task_names, MoleculeDataset, validate_dataset_type
 from chemprop.utils import create_logger, makedirs, timeit, multitask_mean
 from chemprop.features import set_extra_atom_fdim, set_extra_bond_fdim, set_explicit_h, set_adding_hs, set_keeping_atom_map, set_reaction, reset_featurization_parameters
-import wandb
 
 @timeit(logger_name=TRAIN_LOGGER_NAME)
 def cross_validate(args: TrainArgs,
@@ -108,17 +107,10 @@ def cross_validate(args: TrainArgs,
     if args.target_weights is not None and len(args.target_weights) != args.num_tasks:
         raise ValueError('The number of provided target weights must match the number and order of the prediction tasks')
 
-    # Run training on different random seeds for each fold
     all_scores = defaultdict(list)
+
     for fold_num in range(args.num_folds):
-        
-        ### Added by Ziming on Apr 17, 2023
-        wandb.init(
-            reinit=True,
-            project = 'selective_lyme_inhibition',
-            name = args.wandb_group_name,
-        )
-        
+
         info(f'Fold {fold_num}')
         args.seed = init_seed + fold_num
         args.save_dir = os.path.join(save_dir, f'fold_{fold_num}')
