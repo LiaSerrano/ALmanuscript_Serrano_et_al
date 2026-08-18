@@ -230,4 +230,8 @@ These files provide more detailed information about the model and data used at a
 * `test_scores.csv` — recorded model evaluation scores.
 * `quiet.log` and `verbose.log` — training logs.
 
+## Expected run times
+
+Runtimes may vary depending on data partition and hardware. Both workflows should conservatively finish within 5 days using the recommended hardware indicated in the scripts. Installing the dependencies for software implementation should take <2 hours. 
+
 
