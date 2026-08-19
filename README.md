@@ -232,6 +232,6 @@ These files provide more detailed information about the model and data used at a
 
 ## Expected run times
 
-Runtimes may vary depending on hardware. Both workflows should conservatively finish within 5 days using the recommended hardware indicated in the scripts. Installing the dependencies for software implementation should take <2 hours. 
+Runtimes may vary depending on hardware. The simulation should take ~28 hours and the real time AL workflows should conservatively finish within 5 days using the recommended hardware indicated in the scripts. Installing the dependencies for software implementation should take <2 hours. 
 
 
