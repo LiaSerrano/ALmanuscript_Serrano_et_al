@@ -3,6 +3,7 @@
 #SBATCH -t 5-00:00
 #SBATCH -p gpu_quad
 #SBATCH --mem=45G
+#SBATCH --fres=gpu:1
 #SBATCH -o run_logs/hostname_%j.out
 #SBATCH -e run_logs/hostname_%j.err
 
