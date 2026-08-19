@@ -80,6 +80,10 @@ To test the script used for Figure 4, run the following (ALmanuscript_Serrano_et
 sbatch run_batch_selection_demo.sh
 ```
 
+## Note on data
+
+all .csv inputs for the demonstrations are provided. The required .pkl file of pre-computed features used for modeling (https://github.com/graphcore-research/minimol) are available upon request for your convenience or could be computed using the developer's linked repository. 
+
 ## Expected Outputs
 
 The repository contains two demonstration workflows:
