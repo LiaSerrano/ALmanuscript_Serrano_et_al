@@ -110,11 +110,11 @@ def plate_scoring(
     ecoli_nonhit_df['nonhit_novelty'] = 1 - ecoli_nonhit_df['nonhit_novelty']
 
     ecoli_prediction_df = ecoli_prediction_df.merge(ecoli_hit_df,
-                                              on = ['Plate','Library','SMILES',ecoli_prediction_target_name,'Ecoli_Inhibition_%ctl_dirichlet_uncal_uncertainty','potential_ecoli_inhibitory'],
+                                              on = ['Plate','SMILES',ecoli_prediction_target_name,'Y_dirichlet_uncal_uncertainty','potential_ecoli_inhibitory'],
                                               how = 'left')
 
     ecoli_prediction_df = ecoli_prediction_df.merge(ecoli_nonhit_df,
-                                              on = ['Plate','Library','SMILES',ecoli_prediction_target_name,'Ecoli_Inhibition_%ctl_dirichlet_uncal_uncertainty','potential_ecoli_inhibitory'],
+                                              on = ['Plate','SMILES',ecoli_prediction_target_name,'Y_dirichlet_uncal_uncertainty','potential_ecoli_inhibitory'],
                                               how = 'left')
 
     ecoli_prediction_df['hit_novelty'] = ecoli_prediction_df['hit_novelty'].fillna(0) # Set non-hits as Zero
@@ -122,11 +122,11 @@ def plate_scoring(
     ecoli_prediction_df['rationales'] = ecoli_prediction_df['rationales'].apply(lambda x: x if isinstance(x, list) else [])
 
     # Drop Duplicate Molecules
-    ecoli_prediction_df = ecoli_prediction_df.drop_duplicates(subset = ['Plate','Library','SMILES'])
+    ecoli_prediction_df = ecoli_prediction_df.drop_duplicates(subset = ['Plate','SMILES'])
 
     ## E.coli - Rank Plates Based on Molecules novelty score
     ecoli_prediction_df['novel_hits'] = np.where(ecoli_prediction_df['hit_novelty'] >= novelty_threshold, 1, 0)
-    ecoli_rank_df = ecoli_prediction_df[['Plate','Library','potential_ecoli_inhibitory','rationales','novel_hits','nonhit_novelty']].groupby(['Plate','Library'], as_index=False)[['potential_ecoli_inhibitory','rationales','novel_hits','nonhit_novelty']].agg({
+    ecoli_rank_df = ecoli_prediction_df[['Plate','potential_ecoli_inhibitory','rationales','novel_hits','nonhit_novelty']].groupby(['Plate'], as_index=False)[['potential_ecoli_inhibitory','rationales','novel_hits','nonhit_novelty']].agg({
         'rationales': unique_rationales,
         'nonhit_novelty': 'mean',
         'potential_ecoli_inhibitory': 'sum',
